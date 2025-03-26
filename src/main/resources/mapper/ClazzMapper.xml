@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yupi.springbootinit.mapper.ClazzMapper">
+
+    <resultMap id="BaseResultMap" type="com.yupi.springbootinit.model.entity.Clazz">
+            <id property="classId" column="classId" jdbcType="BIGINT"/>
+            <result property="className" column="className" jdbcType="VARCHAR"/>
+            <result property="classSize" column="classSize" jdbcType="BIGINT"/>
+            <result property="grade" column="grade" jdbcType="VARCHAR"/>
+            <result property="field" column="field" jdbcType="VARCHAR"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        classId,className,classSize,
+        grade,field,createTime,
+        updateTime,isDelete
+    </sql>
+</mapper>

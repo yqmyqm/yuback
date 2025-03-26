@@ -1,6 +1,5 @@
 package com.yupi.springbootinit.mapper;
 
-import com.yupi.springbootinit.model.entity.Post;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.Resource;

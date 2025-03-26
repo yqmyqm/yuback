@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yupi.springbootinit.mapper.TestMapper">
+
+    <resultMap id="BaseResultMap" type="com.yupi.springbootinit.model.entity.Test">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="singleNum" column="singleNum" jdbcType="INTEGER"/>
+            <result property="multipleNum" column="multipleNum" jdbcType="INTEGER"/>
+            <result property="judgeNum" column="judgeNum" jdbcType="INTEGER"/>
+            <result property="shortAnswerNum" column="shortAnswerNum" jdbcType="INTEGER"/>
+            <result property="isAnswer" column="isAnswer" jdbcType="TINYINT"/>
+            <result property="result" column="result" jdbcType="VARCHAR"/>
+            <result property="goal" column="goal" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,singleNum,multipleNum,
+        judgeNum,shortAnswerNum,isAnswer,
+        result,goal
+    </sql>
+</mapper>

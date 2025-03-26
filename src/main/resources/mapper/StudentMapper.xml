@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yupi.springbootinit.mapper.StudentMapper">
+
+    <resultMap id="BaseResultMap" type="com.yupi.springbootinit.model.entity.Student">
+            <id property="studentId" column="studentId" jdbcType="BIGINT"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="gender" column="gender" jdbcType="VARCHAR"/>
+            <result property="clazzId" column="clazzId" jdbcType="BIGINT"/>
+            <result property="homeworkStation" column="homeworkStation" jdbcType="VARCHAR"/>
+            <result property="studyStation" column="studyStation" jdbcType="VARCHAR"/>
+            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- 联表查询返回特定字段 -->
+    <resultMap id="StudentQueryRequestMap" type="com.yupi.springbootinit.model.dto.student.StudentWithClazzDTO">
+        <id property="studentId" column="studentId"/>
+        <result property="name" column="name"/>
+        <result property="gender" column="gender"/>
+        <result property="clazzName" column="clazzName"/>
+        <result property="homeworkStation" column="homeworkStation"/>
+        <result property="studyStation" column="studyStation"/>
+    </resultMap>
+
+    <select id="selectStudentsWithClazzName" resultMap="StudentQueryRequestMap">
+        SELECT
+        s.studentId,  s.name,  s.gender,
+        c.clazzName,  s.homeworkStation,  s.studyStation
+        FROM student s
+        LEFT JOIN clazz c ON s.clazzId  = c.clazzId
+        WHERE s.isDelete  = 0
+        <!-- 动态条件处理 -->
+        <if test="keyword != null and keyword != ''">
+            AND (s.name  LIKE CONCAT('%', #{keyword}, '%')
+            OR c.clazzName  LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+    </select>
+
+<!--    <sql id="Base_Column_List">-->
+<!--        studentId,name,gender,-->
+<!--        clazzId,homeworkStation,studyStation,-->
+<!--        isDelete,createTime,updateTime-->
+<!--    </sql>-->
+
+<!--    &lt;!&ndash; 联表查询数据 &ndash;&gt;-->
+<!--    <select id="selectStudentsWithClazzName" resultMap="StudentQueryRequestMap">-->
+<!--        SELECT-->
+<!--        s.studentId,  s.name,  s.gender,-->
+<!--        c.clazzName,  s.homeworkStation,  s.studyStation-->
+<!--        FROM student s-->
+<!--        LEFT JOIN clazz c ON s.clazzId  = c.clazzId-->
+<!--        WHERE s.isDelete  = 0-->
+<!--        &lt;!&ndash; 动态条件处理 &ndash;&gt;-->
+<!--        <if test="keyword != null and keyword != ''">-->
+<!--            AND (s.name  LIKE CONCAT('%', #{keyword}, '%')-->
+<!--            OR c.clazzName  LIKE CONCAT('%', #{keyword}, '%'))-->
+<!--        </if>-->
+<!--    </select>-->
+</mapper>

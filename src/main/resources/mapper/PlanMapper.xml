@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yupi.springbootinit.mapper.PlanMapper">
+
+    <resultMap id="BaseResultMap" type="com.yupi.springbootinit.model.entity.Plan">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="subject" column="subject" jdbcType="VARCHAR"/>
+            <result property="bookName" column="bookName" jdbcType="VARCHAR"/>
+            <result property="classTime" column="classTime" jdbcType="VARCHAR"/>
+            <result property="topic" column="topic" jdbcType="VARCHAR"/>
+            <result property="result" column="result" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,subject,bookName,
+        classTime,topic,result
+    </sql>
+</mapper>
