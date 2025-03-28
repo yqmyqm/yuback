@@ -10,18 +10,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix = "tencent.client")
 @Data
 public class DeepSeekClientConfig {
     /**
      * 腾讯云id
      */
-    private String secretId;
+    private String secretId = System.getenv("DEEPSEEK_API_ID");
 
     /**
      * 腾讯云key
      */
-    private String secretKey;
+    private String secretKey = System.getenv("DEEPSEEK_API_KEY");
 
     /**
      * 获取客户端

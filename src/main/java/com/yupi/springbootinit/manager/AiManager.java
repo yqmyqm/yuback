@@ -1,5 +1,11 @@
 package com.yupi.springbootinit.manager;
 
+import com.alibaba.dashscope.aigc.imagesynthesis.ImageSynthesis;
+import com.alibaba.dashscope.aigc.imagesynthesis.ImageSynthesisParam;
+import com.alibaba.dashscope.aigc.imagesynthesis.ImageSynthesisResult;
+import com.alibaba.dashscope.exception.ApiException;
+import com.alibaba.dashscope.exception.NoApiKeyException;
+import com.alibaba.dashscope.utils.JsonUtils;
 import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 import com.tencentcloudapi.lkeap.v20240522.LkeapClient;
 import com.tencentcloudapi.lkeap.v20240522.models.ChatCompletionsRequest;
@@ -48,5 +54,32 @@ public class AiManager {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "ai对话失败了");
         }
 
+    }
+    public String doPic(String message) {
+        try{
+            String prompt = message;
+            String apiKey = System.getenv("DASHSCOPE_API_KEY");
+            ImageSynthesisParam param =
+                    ImageSynthesisParam.builder()
+                            .apiKey(apiKey)
+                            .model("wanx2.1-t2i-turbo")
+                            .prompt(prompt)
+                            .n(1)
+                            .size("1024*1024")
+                            .build();
+
+            ImageSynthesis imageSynthesis = new ImageSynthesis();
+            ImageSynthesisResult result = null;
+            try {
+                System.out.println("---sync call, please wait a moment----");
+                result = imageSynthesis.call(param);
+            } catch (ApiException | NoApiKeyException e){
+                throw new RuntimeException(e.getMessage());
+            }
+            return JsonUtils.toJson(result);
+        }catch(ApiException e){
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
 }

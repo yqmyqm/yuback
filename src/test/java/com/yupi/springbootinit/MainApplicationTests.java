@@ -19,7 +19,10 @@ class MainApplicationTests {
 
     @Test
     void contextLoads() {
-        System.out.println(wxOpenConfig);
+         String secretId = System.getenv("DEEPSEEK_API_ID");
+        System.out.println(secretId);
     }
+
+
 
 }

@@ -46,15 +46,16 @@ public class AiController {
     private PlanService planService;
     @Resource
     private TestService testService;
+
     /**
-     * 根据目标生成文字
+     * 根据PPT主题生成大纲和内容
      *
      * @param genChatByAiRequest
      * @param request
      * @return
      */
-    @PostMapping("/genchat")
-    public BaseResponse<AiResponse> getChatByAi(GenChatByAiRequest genChatByAiRequest, HttpServletRequest request) {
+    @PostMapping("/genbysubject")
+    public BaseResponse<AiResponse> getBySubject(GenChatByAiRequest genChatByAiRequest, HttpServletRequest request) {
         String name = genChatByAiRequest.getName();
         String goal = genChatByAiRequest.getGoal();
         //校验
@@ -64,8 +65,8 @@ public class AiController {
 
         //用户输入
         StringBuilder userInput = new StringBuilder();
-        userInput.append("请你满足我的需求并且生成的格式为字符串，不要表情等内容").append("\n");
-        userInput.append("我的需求：").append("\n");
+        userInput.append("我将输入PPT的主题，请你根据此主题生成大纲和内容").append("\n");
+        userInput.append("我的PPT主题：").append("\n");
         String userGoal = goal;
         userInput.append(userGoal).append("\n");
         //执行ai
@@ -77,14 +78,88 @@ public class AiController {
         chatResult.setUserId(loginUser.getId());
         chatResult.setGoal(userGoal);
         boolean saveResult = chatService.save(chatResult);
-        ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "图表保存失败");
+        ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "内容保存失败");
         //返回结果
         AiResponse aiResponse = new AiResponse();
         aiResponse.setResult(result);
         aiResponse.setChatId(chatResult.getId());
         return ResultUtils.success(aiResponse);
-
     }
+
+    /**
+     * 根据内容生成标题、大纲和内容
+     *
+     * @param genChatByAiRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/genbytext")
+    public BaseResponse<AiResponse> getByText(GenChatByAiRequest genChatByAiRequest, HttpServletRequest request) {
+        String name = genChatByAiRequest.getName();
+        String goal = genChatByAiRequest.getGoal();
+        //校验
+        ThrowUtils.throwIf(StringUtils.isBlank(goal), ErrorCode.PARAMS_ERROR, "目标不能为空");
+        ThrowUtils.throwIf(StringUtils.isBlank(name) && name.length() > 100, ErrorCode.PARAMS_ERROR, "名称不能为空或过长");
+        User loginUser = userService.getLoginUser(request);
+
+        //用户输入
+        StringBuilder userInput = new StringBuilder();
+        userInput.append("我将输入一段关于PPT的内容，请你根据此内容生成PPT的标题、大纲和内容").append("\n");
+        userInput.append("我的PPT内容：").append("\n");
+        String userGoal = goal;
+        userInput.append(userGoal).append("\n");
+        //执行ai
+        String result = aiManager.doChat(userInput.toString());
+        //插入到数据库
+        Chat chatResult = new Chat();
+        chatResult.setName(name);
+        chatResult.setResult(result);
+        chatResult.setUserId(loginUser.getId());
+        chatResult.setGoal(userGoal);
+        boolean saveResult = chatService.save(chatResult);
+        ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "内容保存失败");
+        //返回结果
+        AiResponse aiResponse = new AiResponse();
+        aiResponse.setResult(result);
+        aiResponse.setChatId(chatResult.getId());
+        return ResultUtils.success(aiResponse);
+    }
+
+    /**
+     * 根据上传的文档生成大纲和内容
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/genbyfile")
+    public BaseResponse<AiResponse> getByFile(@RequestPart("file") MultipartFile multipartFile, HttpServletRequest request) {
+        String data = DocUtils.docToText(multipartFile);
+        //校验
+        ThrowUtils.throwIf(StringUtils.isBlank(data), ErrorCode.PARAMS_ERROR, "文档不能为空");
+        User loginUser = userService.getLoginUser(request);
+
+        //用户输入
+        StringBuilder userInput = new StringBuilder();
+        userInput.append("我将输入一段PPT的内容，请你根据此内容生成PPT文档内容").append("\n");
+        userInput.append("我的PPT内容：").append("\n");
+        String userGoal = data;
+        userInput.append(userGoal).append("\n");
+        //执行ai
+        String result = aiManager.doChat(userInput.toString());
+        //插入到数据库
+        Chat chatResult = new Chat();
+        chatResult.setResult(result);
+        chatResult.setUserId(loginUser.getId());
+        chatResult.setGoal(userGoal);
+        boolean saveResult = chatService.save(chatResult);
+        ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "内容保存失败");
+        //返回结果
+        AiResponse aiResponse = new AiResponse();
+        aiResponse.setResult(result);
+        aiResponse.setChatId(chatResult.getId());
+        return ResultUtils.success(aiResponse);
+    }
+
 
     /**
      * 生成教案
@@ -167,9 +242,23 @@ public class AiController {
         boolean saveResult = testService.save(test);
         ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "保存失败");
         AiResponse aiResponse = new AiResponse();
+        aiResponse.setChatId(test.getId());
         aiResponse.setResult(result);
         return ResultUtils.success(aiResponse);
 
+    }
+
+    /**
+     * 生成图片
+     */
+    @PostMapping("/genpic")
+    public BaseResponse<String> genPic(String prompt, HttpServletRequest request) {
+        //校验
+        ThrowUtils.throwIf(StringUtils.isBlank(prompt), ErrorCode.PARAMS_ERROR, "输入请求不能为空");
+        //执行ai
+        String result = aiManager.doPic(prompt);
+        ThrowUtils.throwIf(StringUtils.isBlank(result), ErrorCode.SYSTEM_ERROR, "生成失败");
+        return ResultUtils.success(result);
     }
 
 }
